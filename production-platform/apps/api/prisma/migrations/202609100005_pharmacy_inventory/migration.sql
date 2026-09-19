@@ -1,0 +1,12 @@
+ALTER TYPE "Role" ADD VALUE IF NOT EXISTS 'PHARMACIST';
+CREATE TYPE "RequisitionStatus" AS ENUM ('PENDING','PART_SUPPLIED','SUPPLIED','CANCELLED');
+CREATE TABLE "InventoryItem" ("id" TEXT NOT NULL,"code" TEXT NOT NULL,"genericName" TEXT NOT NULL,"formulation" TEXT NOT NULL,"strength" TEXT NOT NULL,"unit" TEXT NOT NULL,"quantity" INTEGER NOT NULL DEFAULT 0,"reorderLevel" INTEGER NOT NULL DEFAULT 0,"location" TEXT NOT NULL DEFAULT 'CENTRAL_STORE',"active" BOOLEAN NOT NULL DEFAULT true,"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "InventoryItem_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "InventoryItem_code_key" ON "InventoryItem"("code");
+CREATE INDEX "InventoryItem_genericName_formulation_strength_idx" ON "InventoryItem"("genericName","formulation","strength");
+CREATE INDEX "InventoryItem_location_active_idx" ON "InventoryItem"("location","active");
+CREATE TABLE "Requisition" ("id" TEXT NOT NULL,"reference" TEXT NOT NULL,"clinicName" TEXT NOT NULL,"period" TEXT NOT NULL,"justification" TEXT NOT NULL,"status" "RequisitionStatus" NOT NULL DEFAULT 'PENDING',"requestedByUserId" TEXT NOT NULL,"suppliedByUserId" TEXT,"suppliedAt" TIMESTAMP(3),"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "Requisition_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "Requisition_reference_key" ON "Requisition"("reference");
+CREATE TABLE "RequisitionItem" ("id" TEXT NOT NULL,"requisitionId" TEXT NOT NULL,"inventoryItemId" TEXT NOT NULL,"requestedQuantity" INTEGER NOT NULL,"suppliedQuantity" INTEGER NOT NULL DEFAULT 0,CONSTRAINT "RequisitionItem_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "RequisitionItem_requisitionId_inventoryItemId_key" ON "RequisitionItem"("requisitionId","inventoryItemId");
+ALTER TABLE "RequisitionItem" ADD CONSTRAINT "RequisitionItem_requisitionId_fkey" FOREIGN KEY ("requisitionId") REFERENCES "Requisition"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "RequisitionItem" ADD CONSTRAINT "RequisitionItem_inventoryItemId_fkey" FOREIGN KEY ("inventoryItemId") REFERENCES "InventoryItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

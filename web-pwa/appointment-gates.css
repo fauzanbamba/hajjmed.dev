@@ -1,0 +1,1 @@
+.appointment-locked{opacity:.55}.appointment-locked::after{content:' · Locked';font-size:8px}.appointment-gate{width:min(520px,100%)}

@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import { mayEditClinicalEntry } from './clinical-entry-lock.js';
+test('clinical entries lock after 24 hours except for leadership',()=>{const now=new Date('2027-01-03T12:00:00Z'),old=new Date('2027-01-02T11:59:59Z');assert.equal(mayEditClinicalEntry(old,'ALLIED_HEALTH',now),false);assert.equal(mayEditClinicalEntry(old,'CLINICIAN',now),false);assert.equal(mayEditClinicalEntry(old,'ADMIN',now),true);assert.equal(mayEditClinicalEntry(old,'MEDICAL_DIRECTOR',now),true)});

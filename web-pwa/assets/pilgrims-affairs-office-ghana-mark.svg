@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Pilgrims Affairs Office Ghana</title>
+  <desc id="desc">HajjMed document identity mark for the Pilgrims Affairs Office Ghana</desc>
+  <circle cx="80" cy="80" r="76" fill="#fff" stroke="#075c43" stroke-width="7"/>
+  <circle cx="80" cy="80" r="59" fill="#075c43"/>
+  <path d="M80 20 84 32 97 32 87 40 91 53 80 45 69 53 73 40 63 32 76 32Z" fill="#f2c94c"/>
+  <rect x="55" y="59" width="50" height="50" rx="3" fill="#111" stroke="#f2c94c" stroke-width="4"/>
+  <path d="M55 70h50v9H55z" fill="#f2c94c"/>
+  <path d="M37 119h86" stroke="#ce1126" stroke-width="7"/>
+  <path d="M43 130h74" stroke="#fcd116" stroke-width="7"/>
+  <path d="M51 141h58" stroke="#006b3f" stroke-width="7"/>
+</svg>

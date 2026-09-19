@@ -1,0 +1,10 @@
+{
+  "name": "HajjMed Ghana — Hajj 2027 EMR",
+  "short_name": "HajjMed",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f5",
+  "theme_color": "#0b5e55",
+  "description": "Medical screening, vaccination and clinical care for Ghanaian Hajj pilgrims",
+  "icons": []
+}

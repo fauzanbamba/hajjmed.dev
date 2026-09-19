@@ -1,0 +1,23 @@
+{
+  "name": "hajjmed-platform",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@12.4.1",
+  "scripts": {
+    "dev:api": "pnpm --filter @hajjmed/api dev",
+    "dev:mobile": "pnpm --filter @hajjmed/mobile start",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "db:generate": "pnpm --filter @hajjmed/api prisma generate",
+    "db:migrate": "pnpm --filter @hajjmed/api prisma migrate dev",
+    "db:seed": "pnpm --filter @hajjmed/api db:seed",
+    "env:check": "node scripts/check-prod-env.mjs",
+    "db:backup": "node scripts/backup-db.mjs",
+    "db:restore": "node scripts/restore-db.mjs",
+    "deploy:check": "node scripts/deploy-check.mjs",
+    "healthcheck": "node scripts/healthcheck.mjs",
+    "migration:precheck": "node scripts/migration-precheck.mjs",
+    "release:gate": "node scripts/release-gate.mjs"
+  }
+}

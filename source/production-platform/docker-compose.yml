@@ -1,0 +1,64 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://hajjmed:hajjmed_dev@postgres:5432/hajjmed?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: replace-with-a-unique-32-character-access-secret
+      JWT_REFRESH_SECRET: replace-with-a-different-32-character-refresh-secret
+      OTP_PEPPER: replace-with-a-random-server-side-otp-pepper
+      OTP_DEMO_MODE: "false"
+      APP_ORIGIN: http://localhost:5173
+    ports: ["4000:4000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:4000/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hajjmed
+      POSTGRES_USER: hajjmed
+      POSTGRES_PASSWORD: hajjmed_dev
+    ports: ["5432:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hajjmed"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: ["redis_data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: hajjmed
+      MINIO_ROOT_PASSWORD: replace-this-development-secret
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio_data:/data"]
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["1025:1025", "8025:8025"]
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
