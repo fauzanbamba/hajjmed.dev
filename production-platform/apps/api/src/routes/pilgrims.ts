@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import argon2 from 'argon2';
 import { ghanaRegions } from '@hajjmed/contracts';
-import { prisma } from '../lib/prisma.js';
+import { db } from '../lib/db.js';
 import { requireRoles,assertPilgrimAccess } from '../lib/authz.js';
 import { audit } from '../lib/audit.js';
 import { queueRegistrationNotifications } from '../services/notifications.js';

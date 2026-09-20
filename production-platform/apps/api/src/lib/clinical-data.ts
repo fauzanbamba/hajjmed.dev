@@ -1,4 +1,4 @@
-import { prisma } from './prisma.js';
+import { db } from './db.js';
 import { supabase } from './supabase.js';
 
 function normalizeDateFields<T>(value: T): T {
@@ -44,7 +44,7 @@ export async function findPilgrimForClinical(pilgrimId: string) {
     }
   }
 
-  return prisma.pilgrim.findUniqueOrThrow({
+  return db.pilgrim.findUniqueOrThrow({
     where: { id: pilgrimId },
     include: {
       user: true,
@@ -66,7 +66,7 @@ export async function findScreeningById(id: string) {
     }
   }
 
-  return prisma.screening.findUniqueOrThrow({ where: { id } });
+  return db.screening.findUniqueOrThrow({ where: { id } });
 }
 
 export async function findScreeningByPilgrim(pilgrimId: string) {
@@ -84,7 +84,7 @@ export async function findScreeningByPilgrim(pilgrimId: string) {
     }
   }
 
-  return prisma.screening.findFirst({
+  return db.screening.findFirst({
     where: { pilgrimId, supersedesId: null },
     select: { id: true, outcome: true, performedAt: true },
     orderBy: { performedAt: 'desc' },
@@ -132,7 +132,7 @@ export async function createScreeningRecord(input: {
     }
   }
 
-  return prisma.screening.create({
+  return db.screening.create({
     data: {
       pilgrimId: input.pilgrimId,
       questionnaireVersion: input.questionnaireVersion,
@@ -182,7 +182,7 @@ export async function createImmunizationRecord(input: {
     }
   }
 
-  return prisma.immunization.create({
+  return db.immunization.create({
     data: {
       pilgrimId: input.pilgrimId,
       facilityId: input.facilityId,
@@ -231,7 +231,7 @@ export async function createEncounterRecord(input: {
     }
   }
 
-  return prisma.encounter.create({
+  return db.encounter.create({
     data: {
       pilgrimId: input.pilgrimId,
       facilityId: input.facilityId,
@@ -260,7 +260,7 @@ export async function findCarePlanByPilgrim(pilgrimId: string) {
     }
   }
 
-  return prisma.carePlan.findUnique({ where: { pilgrimId } });
+  return db.carePlan.findUnique({ where: { pilgrimId } });
 }
 
 export async function upsertCarePlanRecord(input: {
@@ -314,7 +314,7 @@ export async function upsertCarePlanRecord(input: {
   }
 
   return existing
-    ? prisma.carePlan.update({
+    ? db.carePlan.update({
         where: { pilgrimId: input.pilgrimId },
         data: {
           selections: input.selections,
@@ -326,7 +326,7 @@ export async function upsertCarePlanRecord(input: {
           updatedByUserId: input.updatedByUserId,
         },
       })
-    : prisma.carePlan.create({
+    : db.carePlan.create({
         data: {
           pilgrimId: input.pilgrimId,
           selections: input.selections,

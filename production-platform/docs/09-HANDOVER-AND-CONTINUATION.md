@@ -17,7 +17,7 @@ Do not commit `.env`, database files, uploads or real patient data.
 
 ## Priority engineering backlog
 
-1. Keep Supabase as the primary hosted data path while Prisma remains an explicit fallback during migration.
+1. Keep Supabase PostgreSQL as the primary hosted database. Prisma is the API ORM and migration tool, not a separate production database.
 2. Complete the appointment and clinical data-access migration, including availability, capacity, screening, immunization, encounter, care-plan and certificate workflows.
 3. Migrate communications, pharmacy, administration, notifications and audit writes behind domain data-access modules.
 4. Apply the normalized Supabase schema and row-level security policies; verify foreign keys, unique constraints, indexes and service-role boundaries before cutover.

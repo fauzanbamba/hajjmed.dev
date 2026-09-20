@@ -1,4 +1,4 @@
-import type { Role } from '@prisma/client';
+import type { Role } from '../lib/db-types.js';
 
 export const CLINICAL_ENTRY_EDIT_WINDOW_MS=24*60*60*1000;
 

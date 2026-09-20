@@ -31,9 +31,6 @@ importers:
       '@hajjmed/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@prisma/client':
-        specifier: ^6.15.0
-        version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -53,9 +50,6 @@ importers:
       '@types/node':
         specifier: ^24.3.0
         version: 24.13.3
-      prisma:
-        specifier: ^6.15.0
-        version: 6.19.3(typescript@5.9.3)
       tsx:
         specifier: ^4.20.5
         version: 4.23.13

@@ -1,4 +1,4 @@
-import type { Role } from '@prisma/client';
+import type { Role } from '../lib/db-types.js';
 
 type CommunicationActor={sub?:string;role:Role;organizationId?:string;pilgrimId?:string};
 type CommunicationScope={pilgrimId:string;organizationId:string|null;openedByUserId?:string;directRecipientUserId?:string|null};

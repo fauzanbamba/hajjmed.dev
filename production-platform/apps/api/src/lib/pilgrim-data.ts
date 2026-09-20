@@ -1,4 +1,4 @@
-import { prisma } from './prisma.js';
+import { db } from './db.js';
 import { supabase } from './supabase.js';
 
 export async function createPilgrimWithUser(input: {
@@ -56,7 +56,7 @@ export async function createPilgrimWithUser(input: {
     }
   }
 
-  const created = await prisma.$transaction(async (tx) => {
+  const created = await db.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
         email: input.email?.toLowerCase() ?? null,
@@ -101,7 +101,7 @@ export async function listPilgrimsForRole(input: { role: string; organizationId?
     }
   }
 
-  return prisma.pilgrim.findMany({
+  return db.pilgrim.findMany({
     where: input.role === 'AGENT' ? { organizationId: input.organizationId ?? 'NONE' } : {},
     select: {
       id: true,
@@ -131,7 +131,7 @@ export async function getPilgrimDetail(id: string) {
     }
   }
 
-  return prisma.pilgrim.findUniqueOrThrow({
+  return db.pilgrim.findUniqueOrThrow({
     where: { id },
     include: {
       allergies: true,
@@ -157,7 +157,7 @@ export async function getPilgrimQrData(id: string) {
     }
   }
 
-  return prisma.pilgrim.findUniqueOrThrow({
+  return db.pilgrim.findUniqueOrThrow({
     where: { id },
     include: {
       allergies: { select: { display: true, reaction: true, severity: true, status: true } },

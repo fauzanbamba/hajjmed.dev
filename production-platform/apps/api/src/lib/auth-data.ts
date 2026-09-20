@@ -1,4 +1,4 @@
-import { prisma } from './prisma.js';
+import { db } from './db.js';
 import { supabase } from './supabase.js';
 
 export async function findUserForLogin(identifier: string) {
@@ -16,7 +16,7 @@ export async function findUserForLogin(identifier: string) {
     }
   }
 
-  return prisma.user.findFirst({
+  return db.user.findFirst({
     where: {
       OR: [
         { email: identifier.toLowerCase() },
@@ -34,7 +34,7 @@ export async function findUserById(userId: string) {
     if (!error && data) return data as any;
   }
 
-  return prisma.user.findUnique({ where: { id: userId } });
+  return db.user.findUnique({ where: { id: userId } });
 }
 
 export async function findTrustedDevice(userId: string, tokenHash: string, userAgentHash: string) {
@@ -53,7 +53,7 @@ export async function findTrustedDevice(userId: string, tokenHash: string, userA
     if (!error && data && data[0]) return data[0] as any;
   }
 
-  return prisma.trustedDevice.findFirst({
+  return db.trustedDevice.findFirst({
     where: {
       userId,
       tokenHash,
@@ -74,7 +74,7 @@ export async function updateTrustedDeviceLastUsed(trustedDeviceId: string) {
     if (!error) return;
   }
 
-  await prisma.trustedDevice.update({
+  await db.trustedDevice.update({
     where: { id: trustedDeviceId },
     data: { lastUsedAt: new Date() },
   });
@@ -103,7 +103,7 @@ export async function createOtpChallenge(input: {
     if (!error && data) return data as any;
   }
 
-  return prisma.otpChallenge.create({
+  return db.otpChallenge.create({
     data: {
       userId: input.userId,
       channel: input.channel,
@@ -125,7 +125,7 @@ export async function expirePreviousOtpChallenges(userId: string) {
     if (!error) return;
   }
 
-  await prisma.otpChallenge.updateMany({
+  await db.otpChallenge.updateMany({
     where: { userId, consumedAt: null },
     data: { consumedAt: new Date() },
   });
@@ -142,7 +142,7 @@ export async function findChallengeForVerification(challengeId: string) {
     if (!error && data) return data as any;
   }
 
-  return prisma.otpChallenge.findUnique({
+  return db.otpChallenge.findUnique({
     where: { id: challengeId },
     include: { user: { include: { pilgrim: true } } },
   });
@@ -167,7 +167,7 @@ export async function incrementOtpAttempts(challengeId: string) {
     }
   }
 
-  await prisma.otpChallenge.update({
+  await db.otpChallenge.update({
     where: { id: challengeId },
     data: { attempts: { increment: 1 } },
   });
@@ -183,7 +183,7 @@ export async function markOtpChallengeConsumed(challengeId: string) {
     if (!error) return;
   }
 
-  await prisma.otpChallenge.update({
+  await db.otpChallenge.update({
     where: { id: challengeId },
     data: { consumedAt: new Date() },
   });
@@ -206,7 +206,7 @@ export async function createTrustedDeviceRecord(input: {
     if (!error) return;
   }
 
-  await prisma.trustedDevice.create({
+  await db.trustedDevice.create({
     data: {
       userId: input.userId,
       tokenHash: input.tokenHash,
@@ -229,7 +229,7 @@ export async function findSessionByRefreshToken(refreshTokenHash: string) {
     if (!error && data && data[0]) return data[0] as any;
   }
 
-  return prisma.session.findFirst({
+  return db.session.findFirst({
     where: {
       refreshTokenHash,
       revokedAt: null,
@@ -250,7 +250,7 @@ export async function revokeSessionByRefreshToken(refreshTokenHash: string) {
     if (!error) return;
   }
 
-  await prisma.session.updateMany({
+  await db.session.updateMany({
     where: {
       refreshTokenHash,
       revokedAt: null,
@@ -282,7 +282,7 @@ export async function createSessionRecord(input: {
     if (!error && data) return data as any;
   }
 
-  return prisma.session.create({
+  return db.session.create({
     data: {
       userId: input.userId,
       refreshTokenHash: input.refreshTokenHash,

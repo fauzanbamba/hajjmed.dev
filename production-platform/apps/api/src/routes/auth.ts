@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import argon2 from 'argon2';
-import { prisma } from '../lib/prisma.js';
+import { db } from '../lib/db.js';
 import { otpCode,otpHash,safeMask,sha256 } from '../lib/crypto.js';
 import { audit } from '../lib/audit.js';
 import { config } from '../config.js';
@@ -38,7 +38,7 @@ export async function authRoutes(app:FastifyInstance){
     return reply.send({requiresOtp:true,userId:user.id,channels});
   });
   app.post('/otp/request',{config:{rateLimit:{max:4,timeWindow:'10 minutes'}}},async(req,reply)=>{
-    const body=z.object({userId:z.string().uuid(),channel:z.enum(['SMS','EMAIL'])}).parse(req.body);const user=await prisma.user.findUniqueOrThrow({where:{id:body.userId}});if(user.status!=='ACTIVE')return reply.code(401).send({error:{code:'ACCOUNT_UNAVAILABLE',message:'OTP cannot be issued for this account'}});
+    const body=z.object({userId:z.string().uuid(),channel:z.enum(['SMS','EMAIL'])}).parse(req.body);const user=await db.user.findUniqueOrThrow({where:{id:body.userId}});if(user.status!=='ACTIVE')return reply.code(401).send({error:{code:'ACCOUNT_UNAVAILABLE',message:'OTP cannot be issued for this account'}});
     const destination=body.channel==='SMS'?user.phoneNormalized:(user.professionalEmail||user.email);if(!destination)return reply.code(400).send({error:{code:'CHANNEL_UNAVAILABLE',message:'Delivery channel is not registered'}});
     const code=otpCode();await expirePreviousOtpChallenges(user.id);const challenge=await createOtpChallenge({userId:user.id,channel:body.channel,destinationMasked:safeMask(destination,body.channel==='SMS'?'sms':'email'),codeHash:otpHash(code),expiresAt:new Date(Date.now()+5*60_000)});
     await audit(req,{action:'OTP_SENT',subjectType:'OtpChallenge',subjectId:challenge.id,metadata:{channel:body.channel}});
@@ -57,7 +57,7 @@ export async function authRoutes(app:FastifyInstance){
     return createSession(app,req,reply,challenge.user);
   });
   app.post('/refresh',{config:{rateLimit:{max:20,timeWindow:'15 minutes'}}},async(req,reply)=>{
-    const {refreshToken}=z.object({refreshToken:z.string().min(60)}).parse(req.body),hash=sha256(refreshToken),session=await findSessionByRefreshToken(hash);if(!session||session.user.status!=='ACTIVE')return reply.code(401).send({error:{code:'INVALID_SESSION',message:'Session is invalid or expired'}});await prisma.session.update({where:{id:session.id},data:{revokedAt:new Date()}});return createSession(app,req,reply,session.user)
+    const {refreshToken}=z.object({refreshToken:z.string().min(60)}).parse(req.body),hash=sha256(refreshToken),session=await findSessionByRefreshToken(hash);if(!session||session.user.status!=='ACTIVE')return reply.code(401).send({error:{code:'INVALID_SESSION',message:'Session is invalid or expired'}});await db.session.update({where:{id:session.id},data:{revokedAt:new Date()}});return createSession(app,req,reply,session.user)
   });
   app.post('/logout',async(req,reply)=>{
     const {refreshToken}=z.object({refreshToken:z.string().min(60)}).parse(req.body);await revokeSessionByRefreshToken(sha256(refreshToken));return reply.code(204).send()

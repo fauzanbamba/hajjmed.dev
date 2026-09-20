@@ -8,7 +8,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      DATABASE_URL: postgresql://hajjmed:hajjmed_dev@postgres:5432/hajjmed?schema=public
       REDIS_URL: redis://redis:6379
       JWT_ACCESS_SECRET: 7fK3mQ9vR2xL8nT5pW6zA1cD4hJ0sE7yU3iO9bN2gF5kP8rV6mX1qZ4wC7dH0
       JWT_REFRESH_SECRET: 4nY8qL1vC6sR0mP3xT9kW2dF7hA5zJ8uE1bN6gQ0iO3rV9yS4cX7pM2wD5fH8
@@ -17,8 +16,6 @@ services:
       APP_ORIGIN: http://localhost:5173
     ports: ["4000:4000"]
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
@@ -26,19 +23,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: hajjmed
-      POSTGRES_USER: hajjmed
-      POSTGRES_PASSWORD: hajjmed_dev
-    ports: ["5432:5432"]
-    volumes: ["postgres_data:/var/lib/postgresql/data"]
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hajjmed"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
   redis:
     image: redis:7-alpine
     ports: ["6379:6379"]
@@ -61,6 +45,5 @@ services:
     image: axllent/mailpit:latest
     ports: ["1025:1025", "8025:8025"]
 volumes:
-  postgres_data:
   redis_data:
   minio_data:

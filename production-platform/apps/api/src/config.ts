@@ -7,7 +7,6 @@ export function validateRuntimeConfig(input: Record<string, string | undefined>)
   const schema = z.object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(4000),
-    DATABASE_URL: z.string().min(1),
     REDIS_URL: z.string().url().default('redis://localhost:6379'),
     JWT_ACCESS_SECRET: z.string().min(32),
     JWT_REFRESH_SECRET: z.string().min(32),
@@ -39,11 +38,15 @@ export function validateRuntimeConfig(input: Record<string, string | undefined>)
         ctx.addIssue({ code: 'custom', path: ['APP_ORIGIN'], message: 'Production APP_ORIGIN must use HTTPS' });
       }
 
-      if (v.SUPABASE_URL && !/^https:\/\//i.test(v.SUPABASE_URL)) {
+      if (!v.SUPABASE_URL) {
+        ctx.addIssue({ code: 'custom', path: ['SUPABASE_URL'], message: 'SUPABASE_URL is required in production' });
+      } else if (!/^https:\/\//i.test(v.SUPABASE_URL)) {
         ctx.addIssue({ code: 'custom', path: ['SUPABASE_URL'], message: 'Supabase URL must use HTTPS' });
       }
 
-      if (v.SUPABASE_SERVICE_ROLE_KEY && placeholderPattern.test(v.SUPABASE_SERVICE_ROLE_KEY)) {
+      if (!v.SUPABASE_SERVICE_ROLE_KEY) {
+        ctx.addIssue({ code: 'custom', path: ['SUPABASE_SERVICE_ROLE_KEY'], message: 'SUPABASE_SERVICE_ROLE_KEY is required in production' });
+      } else if (placeholderPattern.test(v.SUPABASE_SERVICE_ROLE_KEY)) {
         ctx.addIssue({ code: 'custom', path: ['SUPABASE_SERVICE_ROLE_KEY'], message: 'Supabase service role key cannot contain placeholder values' });
       }
     }

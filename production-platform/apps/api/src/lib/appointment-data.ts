@@ -1,4 +1,4 @@
-import { prisma } from './prisma.js';
+import { db } from './db.js';
 import { supabase } from './supabase.js';
 
 function normalizeDateFields<T>(value: T): T {
@@ -39,7 +39,7 @@ export async function findAppointmentAvailability(input: {
     }
   }
 
-  return prisma.appointment.findMany({
+  return db.appointment.findMany({
     where: {
       region: input.region,
       startsAt: { gte: input.startsAtMin, lt: input.startsAtMax },
@@ -62,7 +62,7 @@ export async function findAppointmentByIdempotencyKey(idempotencyKey: string) {
     }
   }
 
-  return prisma.appointment.findUnique({ where: { idempotencyKey } });
+  return db.appointment.findUnique({ where: { idempotencyKey } });
 }
 
 export async function createAppointmentRecord(input: {
@@ -106,7 +106,7 @@ export async function createAppointmentRecord(input: {
     }
   }
 
-  return prisma.appointment.create({
+  return db.appointment.create({
     data: {
       reference: input.reference,
       pilgrimId: input.pilgrimId,
@@ -148,7 +148,7 @@ export async function updateAppointmentRecord(
     }
   }
 
-  return prisma.appointment.update({
+  return db.appointment.update({
     where: { id },
     data: {
       facilityId: data.facilityId,
