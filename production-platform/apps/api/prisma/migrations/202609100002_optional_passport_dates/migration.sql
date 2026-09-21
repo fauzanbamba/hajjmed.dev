@@ -1,1 +1,0 @@
-ALTER TABLE "Pilgrim" ALTER COLUMN "passportExpiry" DROP NOT NULL;
