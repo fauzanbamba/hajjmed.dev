@@ -1,102 +1,79 @@
 # HajjMed Ghana
 
-HajjMed is a production-oriented medical screening and healthcare coordination platform for Ghanaian pilgrims preparing for Hajj 2027.
+**Version 0.2.0 — development foundation for Hajj 2027**
 
-The platform provides secure workflows for pilgrim registration, appointment scheduling, clinical screening, immunization, encounters, care plans, medical fitness certification, pharmacy operations, communications and administrative oversight.
+HajjMed is a production-oriented medical screening and healthcare-coordination platform for Ghanaian pilgrims preparing for Hajj 2027. It supports the operational journey from registration and appointments through clinical screening, immunization, care planning, medical-fitness certification, pharmacy operations, communications and administrative oversight.
 
-> This project is a development foundation. It is not yet approved for live medical data or regulatory production deployment.
+> **Development status:** this repository is a software foundation and handover package. It is not approved for live medical data, clinical operation, or regulatory production deployment.
 
-## Repository
+## What is included
 
-GitHub: https://github.com/fauzanbamba/hajjmed.dev
+- Pilgrim registration, identity management and organization/agent access controls
+- Appointment capacity management, including protected walk-in/VIP workflows
+- Role-based authentication, OTP and trusted-device controls
+- Clinical screening, encounters, immunizations, care plans and hard-red screening controls
+- Medical-fitness certificate and unified QR credential workflows with leadership authentication
+- Pharmacy inventory and dispensing controls
+- Secure communications, notifications, audit logging and administrative exports
+- A responsive browser/PWA prototype, TypeScript API, mobile application, shared contracts, database schema, migrations and handover documentation
 
-## Architecture
+## Repository layout
 
-- `apps/api` - Fastify and TypeScript backend API
-- `apps/mobile` - Expo and React Native mobile application
-- `packages/contracts` - Shared TypeScript contracts and business types
-- `prisma` - Database schema, migrations and seed data
-- `docs` - Architecture, security, database and deployment documentation
-- `web-pwa` - Browser-based user experience prototype
-- `reference-documents` - Product and foundation reference material
+- `00-START-HERE.md` — handover entry point and recommended reading order
+- `production-platform/` — runnable pnpm workspace
+  - `apps/api/` — Fastify API, Prisma/PostgreSQL, Redis-backed workflows and authorization
+  - `apps/mobile/` — Expo/React Native mobile application
+  - `packages/contracts/` — shared TypeScript contracts and business types
+  - `docs/` — architecture, security, validation, deployment and handover documentation
+- `web-pwa/` — responsive browser/PWA prototype with demonstration data
+- `source/` — curated source and handover materials
+- `reference-documents/` — product and foundation reference material
 
-## Technology Stack
+## Technology
 
-- TypeScript
-- Fastify
-- Prisma
-- PostgreSQL
-- Supabase
-- Redis
-- MinIO-compatible object storage
-- Expo and React Native
-- Zod
-- Docker Compose
-- pnpm
+TypeScript, Fastify, Prisma, PostgreSQL, Supabase, Redis, MinIO-compatible object storage, Expo, React Native, Zod, Docker Compose and pnpm.
 
-## Core Features
+## Local development
 
-- Pilgrim registration and identity management
-- Organization and agent access control
-- Role-based authentication and OTP verification
-- Trusted-device authentication
-- Appointment availability and capacity management
-- Protected appointment slots
-- Clinical screening workflows
-- Regulatory hard-red screening controls
-- Immunization records
-- Clinical encounters
-- Care plans
-- Medical fitness certificate authentication
-- Pharmacy inventory and dispensing workflows
-- Secure communications
-- Notification workflows
-- Audit logging
-- QR-based pilgrim access
-- Mobile application support
-
-## Supabase Migration
-
-The backend is being migrated incrementally to Supabase.
-
-The current migration pattern is:
-
-1. Supabase data access is attempted first.
-2. Existing Prisma access remains as a controlled fallback.
-3. Business rules and authorization remain in the API layer.
-4. Each domain is migrated independently.
-5. Prisma fallback will be removed only after validation, reconciliation and rollback testing.
-
-Migration areas include:
-
-- Authentication and sessions
-- Pilgrim records
-- Appointments
-- Clinical screening
-- Immunizations
-- Encounters
-- Care plans
-- Communications
-- Pharmacy
-- Notifications
-- Administrative reporting
-- Audit events
-
-The Supabase service-role key must only be used by the backend API. It must never be exposed to web or mobile clients.
-
-## Local Development
+Use synthetic data only.
 
 ### Requirements
 
 - Node.js LTS
-- pnpm
+- pnpm 10
 - Docker Desktop
-- PostgreSQL, Redis and MinIO through Docker Compose
-- Supabase project for hosted database testing
+- A Supabase project for hosted-database migration testing, when applicable
 
-### Installation
+### Start
 
 ```bash
 git clone https://github.com/fauzanbamba/hajjmed.dev.git
 cd hajjmed.dev/production-platform
+cp .env.example .env
+# Replace every development secret before starting services.
+docker compose up -d
 pnpm install
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
+pnpm dev:api
+```
+
+In a second terminal, run:
+
+```bash
+cd hajjmed.dev/production-platform
+pnpm dev:mobile
+```
+
+The API defaults to `http://localhost:4000`; interactive API documentation is available at `/docs`. See [LOCAL-DEVELOPMENT.md](production-platform/LOCAL-DEVELOPMENT.md) for the complete development environment, and [SOURCE-CODE-MANIFEST.md](production-platform/SOURCE-CODE-MANIFEST.md) for the source inventory.
+
+## Data protection and release boundary
+
+Do not process real pilgrim health, passport, contact or clinical data in this environment. Before any live deployment, complete the documented clinical validation, DPIA, security testing, provider integrations, object-storage hardening, backup and recovery proof, and applicable Ghanaian and Saudi regulatory approvals.
+
+The Supabase service-role key is backend-only and must never be exposed to web or mobile clients.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
