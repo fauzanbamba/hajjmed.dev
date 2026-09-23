@@ -1,7 +1,10 @@
 node_modules/
 .env
+.evv.*
 .expo/
 .expo-cache/
 dist/
+.build/
+.next
 coverage/
 *.log
