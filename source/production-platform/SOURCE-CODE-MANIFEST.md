@@ -1,6 +1,6 @@
 # HajjMed 2027 source-code manifest
 
-Version: 0.2 development foundation  
+Version: 0.2.0 development foundation
 Prepared: 4 September 2026  
 Product owner: Dr. Abdul Samed Sulemana, sole proprietor of NADMED Consult  
 Clinical authority represented in the workflow: Medical Directorate, Pilgrims Affairs Office Ghana

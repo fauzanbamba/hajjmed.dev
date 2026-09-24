@@ -20,7 +20,7 @@ import { db } from './lib/db.js';
 export async function buildApp(){
   const app=Fastify({logger:{redact:['req.headers.authorization','body.password','body.code','body.refreshToken']},trustProxy:true,requestIdHeader:'x-request-id'});
   await app.register(helmet);await app.register(cors,{origin:config.APP_ORIGIN,credentials:true});await app.register(rateLimit,{max:100,timeWindow:'1 minute'});await app.register(jwt,{secret:config.JWT_ACCESS_SECRET});
-  await app.register(swagger,{openapi:{info:{title:'HajjMed 2027 Clinical API',version:'0.1.0'},components:{securitySchemes:{bearerAuth:{type:'http',scheme:'bearer',bearerFormat:'JWT'}}}}});await app.register(swaggerUi,{routePrefix:'/docs'});
+  await app.register(swagger,{openapi:{info:{title:'HajjMed 2027 Clinical API',version:'0.2.0'},components:{securitySchemes:{bearerAuth:{type:'http',scheme:'bearer',bearerFormat:'JWT'}}}}});await app.register(swaggerUi,{routePrefix:'/docs'});
   app.get('/health/live',async()=>({status:'ok',service:'hajjmed-api'}));
   app.get('/health/ready',async(req,reply)=>{try{await db.user.count({take:1});return {status:'ready',service:'hajjmed-api',database:'supabase'}}catch(error){req.log.error(error);return reply.code(503).send({status:'unavailable',service:'hajjmed-api',database:'failed'})}});
   app.get('/health',async()=>({status:'ok',service:'hajjmed-api'}));
