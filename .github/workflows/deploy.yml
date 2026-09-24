@@ -1,0 +1,105 @@
+name: Deploy to Remote Server
+
+on:
+  workflow_run:
+    workflows: ["Build & Push HajjMed API to Docker Hub"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: amzan96/hajjmed-api
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment || 'staging' }}
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'pull_request')
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📋 Determine deployment environment
+        id: env-config
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+          if [ -z "$ENV" ]; then
+            if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              ENV="production"
+            else
+              ENV="staging"
+            fi
+          fi
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "Deploying to: $ENV"
+
+      - name: 🚀 SSH Deploy - Pull and restart containers
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+            ENV="${{ steps.env-config.outputs.environment }}"
+            DEPLOY_DIR="/opt/hajjmed-$ENV"
+            
+            echo "🔄 Pulling latest code..."
+            cd $DEPLOY_DIR
+            git fetch origin
+            git checkout origin/main
+            
+            echo "🐳 Pulling latest Docker image..."
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            
+            echo "🔄 Restarting containers with docker-compose..."
+            docker compose --file docker-compose.yml down || true
+            docker compose --file docker-compose.yml up -d --pull always
+            
+            echo "✅ Deployment complete!"
+            docker compose logs -f api --tail 20
+
+      - name: 🔍 Health check
+        run: |
+          echo "Waiting for API to become healthy..."
+          for i in {1..30}; do
+            if curl -f http://${{ secrets.DEPLOY_HOST }}:4000/health/ready 2>/dev/null; then
+              echo "✅ API is healthy!"
+              exit 0
+            fi
+            echo "⏳ Attempt $i/30..."
+            sleep 2
+          done
+          echo "❌ API health check failed"
+          exit 1
+
+      - name: 📧 Notify on success
+        if: success()
+        uses: davisngenes/slack-action@v1
+        with:
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: success
+          text: "✅ HajjMed API deployed to ${{ steps.env-config.outputs.environment }}"
+
+      - name: 📧 Notify on failure
+        if: failure()
+        uses: davisngenes/slack-action@v1
+        with:
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          status: failure
+          text: "❌ HajjMed API deployment to ${{ steps.env-config.outputs.environment }} failed"

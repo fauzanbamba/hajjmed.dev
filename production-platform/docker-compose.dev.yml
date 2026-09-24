@@ -1,0 +1,37 @@
+version: '3.9'
+
+# Development compose override: enables hot-reload and debugging
+services:
+  api:
+    build:
+      context: .\n      dockerfile: apps/api/Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      # Watch source files for changes
+      - ./apps/api/src:/app/apps/api/src
+      - ./packages/contracts/src:/app/packages/contracts/src
+      # Use tini for graceful shutdown
+    ports:
+      - "4000:4000"
+    develop:
+      watch:
+        - path: ./apps/api/src
+          action: rebuild
+        - path: ./packages/contracts/src
+          action: rebuild
+    command: ["tsx", "watch", "apps/api/src/server.ts"]
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  mailpit:
+    ports:
+      - "1025:1025"
+      - "8025:8025"

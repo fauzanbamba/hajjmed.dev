@@ -1,9 +1,38 @@
-node_modules
-**/node_modules
-**/dist
-.git
+# Dependencies and build artifacts
+node_modules/
+**/node_modules/
+**/dist/
+
+# Environment and secrets
 .env
-.expo-cache
-coverage
+.env.local
+.env.*.local
+
+# Source control and tools
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary and cache files
+.expo-cache/
+.next/
+coverage/
 *.log
+*.logs
 *.zip
+*.tar.gz
+.DS_Store
+
+# Development and documentation
+README.md
+LOCAL-DEVELOPMENT.md
+SOURCE-CODE-MANIFEST.md
+docs/
+reference-documents/
+scripts/
+

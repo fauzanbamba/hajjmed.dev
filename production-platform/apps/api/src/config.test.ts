@@ -5,9 +5,9 @@ import { validateRuntimeConfig } from './config.js';
 
 const validProductionConfig = {
   NODE_ENV: 'production',
-  PORT: 4000,
-  DATABASE_URL: 'postgresql://postgres.project-ref:secret@pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true',
-  DIRECT_URL: 'postgresql://postgres:secret@db.project-ref.supabase.co:5432/postgres?sslmode=require',
+  PORT: '4000',
+  DATABASE_URL: 'postgresql://postgres.project-ref:[REDACTED]@pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true',
+  DIRECT_URL: 'postgresql://postgres:[REDACTED]@db.project-ref.supabase.co:5432/postgres?sslmode=require',
   REDIS_URL: 'redis://localhost:6379',
   JWT_ACCESS_SECRET: 'aVeryStrongAccessSecretKey123456',
   JWT_REFRESH_SECRET: 'aDifferentRefreshSecretKey654321',

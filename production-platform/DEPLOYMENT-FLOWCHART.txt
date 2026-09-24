@@ -1,0 +1,137 @@
+DEPLOYMENT FLOWCHART - HajjMed API
+====================================
+
+STAGE 1: BUILD DOCKER IMAGE
+─────────────────────────────
+
+$ docker build -f apps/api/Dockerfile -t hajjmed-api:latest .
+
+Builder Stage (node:22-alpine):
+├─ Install dependencies (pnpm)
+├─ Compile TypeScript to JavaScript
+└─ Create optimized build artifacts
+
+Runtime Stage (fresh node:22-alpine):
+├─ Copy compiled code only (no source)
+├─ Install production dependencies only
+├─ Add health checks
+└─ Result: hajjmed-api:latest (274MB image)
+
+
+STAGE 2: PUSH TO DOCKER HUB
+────────────────────────────
+
+$ docker login
+$ docker tag hajjmed-api:latest amzan96/hajjmed-api:latest
+$ docker push amzan96/hajjmed-api:latest
+
+Result: Image available at Docker Hub
+→ https://hub.docker.com/r/amzan96/hajjmed-api
+
+
+STAGE 3: LOCAL DEPLOYMENT
+──────────────────────────
+
+$ cp .env.local.example .env
+$ nano .env  (set DATABASE_URL, SUPABASE_*, JWT_*, etc)
+$ docker compose up -d --pull always
+
+Services Started:
+┌─ API Container (amzan96/hajjmed-api:latest) ─┐
+│ Port: 4000                                    │
+│ Status: healthy (via /health/ready)           │
+└──────────────────────────────────────────────┘
+        ↓              ↓              ↓
+    Redis       MinIO        Mailpit
+   (cache)   (storage)      (email)
+   :6379      :9000/:9001    :1025/:8025
+
+Verify:
+$ curl http://localhost:4000/health/ready
+$ docker compose ps
+
+
+STAGE 4: GITHUB ACTIONS CI/CD (OPTIONAL)
+──────────────────────────────────────────
+
+Setup:
+1. GitHub repo → Settings → Secrets
+2. Add DOCKER_HUB_USERNAME = amzan96
+3. Add DOCKER_HUB_TOKEN = <token>
+4. Push code to main/develop
+
+Workflow (docker-build.yml):
+├─ Triggered by: push to main/develop or PR
+├─ Steps:
+│  ├─ Setup Docker Buildx
+│  ├─ Log in to Docker Hub
+│  ├─ Build image (with layer caching)
+│  ├─ Extract version tags
+│  └─ Push to amzan96/hajjmed-api:latest
+└─ Result: Image pushed automatically
+
+Optional Remote Deployment (deploy.yml):
+├─ Triggered by: docker-build.yml success
+├─ Steps:
+│  ├─ SSH to your server
+│  ├─ Pull latest code
+│  ├─ Run docker-compose up -d
+│  ├─ Verify health checks
+│  └─ Notify Slack
+└─ Result: Auto-deployed to staging/production
+
+
+QUICK REFERENCE
+────────────────
+
+Manual Local:
+$ docker build -f apps/api/Dockerfile -t hajjmed-api:latest .
+$ docker compose up -d --pull always
+$ curl :4000/health/ready
+$ docker compose logs -f api
+$ docker compose down
+
+Push to Docker Hub:
+$ docker tag hajjmed-api:latest amzan96/hajjmed-api:latest
+$ docker push amzan96/hajjmed-api:latest
+
+Automated (GitHub):
+$ git push origin main → Triggers CI/CD → Auto-deployed
+
+
+SERVICES & PORTS
+─────────────────
+API           localhost:4000        API docs: localhost:4000/docs
+Redis         localhost:6379        Cache & sessions
+MinIO         localhost:9000        S3 storage
+MinIO Console localhost:9001        Web UI
+Mailpit SMTP  localhost:1025        Email capture
+Mailpit Web   localhost:8025        Email web UI
+PostgreSQL    Remote (via .env)     Primary database
+
+
+KEY FILES
+──────────
+production-platform/
+  ├─ docker-compose.yml              Production config
+  ├─ docker-compose.dev.yml          Dev with hot-reload
+  ├─ .env.local.example              Environment template
+  ├─ apps/api/Dockerfile             Production image
+  ├─ apps/api/Dockerfile.dev         Development image
+  ├─ DEPLOYMENT-GUIDE.md             Detailed guide
+  ├─ GITHUB-SECRETS-SETUP.md         Actions setup
+  └─ scripts/push-to-docker-hub.*    Push scripts
+
+.github/workflows/
+  ├─ docker-build.yml                Auto-build & push
+  └─ deploy.yml                      Auto-deploy
+
+
+NEXT STEPS
+───────────
+1. cd production-platform
+2. bash scripts/push-to-docker-hub.sh latest
+3. cp .env.local.example .env
+4. Edit .env with your values
+5. docker compose up -d --pull always
+6. curl http://localhost:4000/health/ready
