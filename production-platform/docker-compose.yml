@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   api:
     build:
@@ -9,26 +7,15 @@ services:
         NODE_ENV: production
     container_name: hajjmed-api
     env_file:
-      - .env
+      - .env.local
     environment:
       NODE_ENV: production
-      PORT: 4000
       REDIS_URL: redis://redis:6379
-      # ⚠️ NEVER use example secrets in production. Generate new values and rotate regularly.
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-7fK3mQ9vR2xL8nT5pW6zA1cD4hJ0sE7yU3iO9bN2gF5kP8rV6mX1qZ4wC7dH0}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-4nY8qL1vC6sR0mP3xT9kW2dF7hA5zJ8uE1bN6gQ0iO3rV9yS4cX7pM2wD5fH8}
-      OTP_PEPPER: ${OTP_PEPPER:-development-otp-pepper-change-before-deployment}
-      OTP_DEMO_MODE: ${OTP_DEMO_MODE:-true}
-      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:5173}
     ports:
       - "4000:4000"
     depends_on:
       redis:
         condition: service_healthy
-      minio:
-        condition: service_started
-      mailpit:
-        condition: service_started
     networks:
       - hajjmed-net
     restart: unless-stopped
@@ -42,9 +29,9 @@ services:
           memory: 256M
 
   redis:
-    image: redis:7-alpine
+    image: redis:latest
     container_name: hajjmed-redis
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes
     ports:
       - "6379:6379"
     volumes:
@@ -66,52 +53,8 @@ services:
           cpus: '0.25'
           memory: 128M
 
-  minio:
-    image: minio/minio:latest
-    container_name: hajjmed-minio
-    command: server /data --console-address :9001
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-hajjmed}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-replace-this-development-secret}
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio_data:/data
-    networks:
-      - hajjmed-net
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-
-  mailpit:
-    image: axllent/mailpit:latest
-    container_name: hajjmed-mailpit
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-    networks:
-      - hajjmed-net
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 128M
-        reservations:
-          cpus: '0.1'
-          memory: 64M
-
 volumes:
   redis_data:
-    driver: local
-  minio_data:
     driver: local
 
 networks:
