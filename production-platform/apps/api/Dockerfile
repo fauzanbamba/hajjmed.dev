@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 RUN corepack enable && apk add --no-cache curl tini
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 WORKDIR /app
 
 # Copy all source files
