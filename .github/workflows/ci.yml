@@ -25,16 +25,16 @@ jobs:
 
       - name: Install dependencies
         run: corepack pnpm install --frozen-lockfile
-        working-directory: source/production-platform
+        working-directory: production-platform
 
       - name: Lint workspace
         run: corepack pnpm lint
-        working-directory: source/production-platform
+        working-directory: production-platform
 
       - name: Build workspace
         run: corepack pnpm build
-        working-directory: source/production-platform
+        working-directory: production-platform
 
       - name: Run API validation tests
         run: corepack pnpm --filter @hajjmed/api test
-        working-directory: source/production-platform
+        working-directory: production-platform

@@ -2,29 +2,30 @@
 
 Prepared: 4 September 2026
 
-This folder contains the full source code developed to date and the accompanying software-development-lifecycle documentation.
+This folder contains handover and reference materials. The active application source is in `production-platform/` and uses Supabase PostgreSQL. `source/production-platform/` is an older Prisma-based snapshot, not the current build or deployment target.
 
 ## Start here
 
-1. Read `source/production-platform/SOURCE-CODE-MANIFEST.md`.
-2. Read `source/production-platform/docs/00-DOCUMENT-CONTROL.md`.
-3. Read `source/production-platform/docs/09-HANDOVER-AND-CONTINUATION.md`.
-4. Follow `source/production-platform/LOCAL-DEVELOPMENT.md` for local setup.
+1. Read `README.md`.
+2. Read `production-platform/SOURCE-CODE-MANIFEST.md`.
+3. Read `production-platform/docs/00-DOCUMENT-CONTROL.md`.
+4. Follow `production-platform/LOCAL-DEVELOPMENT.md` for local setup.
 
 ## Contents
 
-- `source/web-pwa`: responsive browser prototype and PWA source.
-- `source/production-platform/apps/api`: TypeScript/Fastify/Prisma backend.
-- `source/production-platform/apps/mobile`: Expo/React Native mobile app.
-- `source/production-platform/packages/contracts`: shared TypeScript contracts.
-- `source/production-platform/docs`: full SDLC and technical documentation.
+- `web-pwa`: responsive browser prototype and PWA source.
+- `production-platform/apps/api`: TypeScript/Fastify API using Supabase.
+- `production-platform/apps/mobile`: Expo/React Native mobile app.
+- `production-platform/packages/contracts`: shared TypeScript contracts.
+- `production-platform/docs`: current SDLC and technical documentation.
+- `source/production-platform`: older Prisma snapshot and unique historical handover materials.
 - `reference-documents`: earlier production foundation document.
-- `TEST-REPORT.md`: verification performed for this handover.
+- `02-TEST-REPORT.md`: historical verification report; rerun the current workspace checks before relying on it.
 
 ## Security
 
-No `.env`, `node_modules`, local database, cache or real medical dataset is included. Create a new `.env` from `.env.example` and use newly generated secrets. Never use the example credentials in production.
+Local `.env*` files may exist in a developer's working copy and are not handover materials. Never copy or commit them; use `.env.example` to configure a separate environment with newly generated secrets. Treat any existing local values as potentially sensitive and rotate them if they have been shared. Never use example credentials in production.
 
 ## Readiness
 
-This is a development handover package. It is not yet authorization to deploy with real medical data. The remaining clinical validation, security assurance, integrations, DPIA and regulatory release gates are documented in the source package.
+This is a development handover package. It is not authorization to deploy with real medical data. The remaining clinical validation, security assurance, integrations, DPIA and regulatory release gates are documented in `production-platform/docs/`.

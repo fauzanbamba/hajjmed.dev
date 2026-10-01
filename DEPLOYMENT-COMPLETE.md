@@ -1,6 +1,8 @@
-# ✅ HajjMed Docker Deployment - Complete & Running
+# Historical deployment notes — not current status
 
-## Status: OPERATIONAL
+> This is an unverified historical note, not evidence that HajjMed is currently deployed or healthy. Its configuration statements conflict with the current Supabase-based application and must not be used as deployment instructions. Verify the live environment through the approved operational process before acting.
+
+## Status at time of note: unverified
 
 ### Services Running
 

@@ -2,6 +2,8 @@
 
 Date: 4 September 2026
 
+> Historical report for the handover snapshot. These results do not certify the active Supabase-based `production-platform/`; rerun its current CI checks before relying on build or test status.
+
 ## Results
 
 | Check | Result |

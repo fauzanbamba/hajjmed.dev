@@ -1,4 +1,9 @@
-✅ .ENV.LOCAL SETUP COMPLETE
+HISTORICAL LOCAL-ENVIRONMENT NOTE — NOT A CURRENT READINESS ASSERTION
+The configuration and service-status statements below are stale and may not describe
+the active Supabase-based application. Do not use this note as deployment evidence.
+Use production-platform/LOCAL-DEVELOPMENT.md and current secrets-management procedures.
+
+✅ .ENV.LOCAL SETUP COMPLETE (historical)
 ═══════════════════════════════════════════════════════════════════════════════
 
 FILE CREATED

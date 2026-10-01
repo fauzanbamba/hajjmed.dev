@@ -1,5 +1,7 @@
 # HajjMed 2027 — Latest consolidated update
 
+> Historical snapshot prepared 11 September 2026. Its verification covers the older Prisma-based `source/production-platform/` tree, not the active Supabase-based `production-platform/`. It is not current build or release evidence.
+
 This handoff incorporates the current web demo, backend source, mobile application source, database schema, compiled API, configuration examples, development documentation and operational reference materials.
 
 ## Latest controls incorporated

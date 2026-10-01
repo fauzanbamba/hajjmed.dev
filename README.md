@@ -21,7 +21,7 @@ HajjMed is a production-oriented medical screening and healthcare-coordination p
 
 - `00-START-HERE.md` — handover entry point and recommended reading order
 - `production-platform/` — runnable pnpm workspace
-  - `apps/api/` — Fastify API, Prisma/PostgreSQL, Redis-backed workflows and authorization
+  - `apps/api/` — Fastify API, Supabase PostgreSQL, Redis-backed workflows and authorization
   - `apps/mobile/` — Expo/React Native mobile application
   - `packages/contracts/` — shared TypeScript contracts and business types
   - `docs/` — architecture, security, validation, deployment and handover documentation
@@ -29,9 +29,11 @@ HajjMed is a production-oriented medical screening and healthcare-coordination p
 - `source/` — curated source and handover materials
 - `reference-documents/` — product and foundation reference material
 
+`production-platform/` is the active application and deployment source of truth. It uses Supabase PostgreSQL at runtime. The older `source/production-platform/` tree is a distinct Prisma-based handover snapshot, not a synchronized copy and not the deployment target; retain its unique handover documents, but do not use its application code for current builds. CI and Docker builds must validate and package `production-platform/`.
+
 ## Technology
 
-TypeScript, Fastify, Prisma, PostgreSQL, Supabase, Redis, MinIO-compatible object storage, Expo, React Native, Zod, Docker Compose and pnpm.
+TypeScript, Fastify, Supabase PostgreSQL, Redis, Expo, React Native, Zod, Docker Compose and pnpm. The Prisma schema in the active workspace is retained for reference; it is not the API runtime data layer.
 
 ## Local development
 
@@ -51,11 +53,10 @@ git clone https://github.com/fauzanbamba/hajjmed.dev.git
 cd hajjmed.dev/production-platform
 cp .env.example .env
 # Replace every development secret before starting services.
-docker compose up -d
+# Configure a disposable Supabase development project as described in
+# production-platform/SUPABASE-API-CUTOVER.md.
 pnpm install
-pnpm db:generate
-pnpm db:migrate
-pnpm db:seed
+docker compose up -d
 pnpm dev:api
 ```
 
