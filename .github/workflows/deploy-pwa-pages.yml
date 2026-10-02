@@ -8,6 +8,7 @@ on:
     paths:
       - 'web-pwa/**'
       - '.github/workflows/deploy-pwa-pages.yml'
+      - '.github/pages-disabled/**'
   workflow_dispatch:
 
 permissions:
@@ -35,7 +36,7 @@ jobs:
       - name: Upload PWA artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: web-pwa
+          path: .github/pages-disabled
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
