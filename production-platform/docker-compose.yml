@@ -3,13 +3,11 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-      args:
-        NODE_ENV: production
     container_name: hajjmed-api
     env_file:
       - .env.local
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       REDIS_URL: redis://redis:6379
     ports:
       - "4000:4000"
