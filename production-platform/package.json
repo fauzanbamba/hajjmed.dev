@@ -12,5 +12,8 @@
     "db:generate": "pnpm --filter @hajjmed/api prisma generate",
     "db:migrate": "pnpm --filter @hajjmed/api prisma migrate dev",
     "db:seed": "pnpm --filter @hajjmed/api db:seed"
+  },
+  "devDependencies": {
+    "supabase": "^2.119.0"
   }
 }
