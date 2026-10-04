@@ -1,0 +1,34 @@
+{
+  "cli": {
+    "version": ">= 5.0.0",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "distribution": "store"
+    }
+  },
+  "submit": {
+    "production-ios": {
+      "ios": {
+        "appleId": "your-apple-id@email.com",
+        "appleIdPassword": "@keychain:FASTLANE_PASSWORD",
+        "teamId": "your-team-id",
+        "appIdentifier": "com.hajjmed.app"
+      }
+    },
+    "production-android": {
+      "android": {
+        "serviceAccount": "@file:./path/to/google-play-key.json",
+        "track": "internal"
+      }
+    }
+  }
+}

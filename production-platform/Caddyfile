@@ -1,0 +1,71 @@
+# Caddy reverse proxy configuration
+# Auto-generates HTTPS certificates, handles redirects, compression
+
+yourdomain.com {
+    # Redirect HTTP to HTTPS (automatic)
+    
+    # API reverse proxy
+    reverse_proxy /api/* 127.0.0.1:4000
+
+    # Health check endpoint
+    reverse_proxy /health/* 127.0.0.1:4000
+
+    # API documentation
+    reverse_proxy /docs* 127.0.0.1:4000
+
+    # Compression
+    encode gzip
+
+    # Security headers
+    header /* {
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "no-referrer-when-downgrade"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+
+    # Rate limiting
+    rate_limit {
+        zone / {
+            key remote_addr
+            rate 60r/m
+        }
+    }
+
+    # Logging
+    log {
+        output stdout
+        format json
+    }
+}
+
+# Monitoring subdomain (Grafana)
+monitoring.yourdomain.com {
+    reverse_proxy 127.0.0.1:3000
+
+    # Basic auth for Grafana
+    basicauth / {
+        admin {$GRAFANA_PASSWORD}
+    }
+
+    encode gzip
+
+    header /* {
+        X-Frame-Options "SAMEORIGIN"
+        Strict-Transport-Security "max-age=31536000"
+    }
+}
+
+# Admin subdomain
+admin.yourdomain.com {
+    reverse_proxy 127.0.0.1:4000
+
+    encode gzip
+
+    header /* {
+        X-Frame-Options "SAMEORIGIN"
+        Strict-Transport-Security "max-age=31536000"
+    }
+}
